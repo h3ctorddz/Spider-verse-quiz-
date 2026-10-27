@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Spider-Verse Quiz</title>
+<style>
+:root{--red:#e62429;--blue:#0d5aa7;--navy:#071426;--ink:#101827;--white:#fff}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:var(--white);background:radial-gradient(circle at 15% 15%,#164d88 0,transparent 30%),radial-gradient(circle at 90% 80%,#a31624 0,transparent 28%),linear-gradient(135deg,#050b16,#101c32 55%,#061020);display:flex;align-items:center;justify-content:center;padding:22px;overflow-x:hidden}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.14;background-image:linear-gradient(30deg,transparent 48%,#7fb9ff 49%,transparent 50%),linear-gradient(150deg,transparent 48%,#7fb9ff 49%,transparent 50%);background-size:54px 54px}
+.wrap{width:min(760px,100%);position:relative;z-index:1}
+.brand{text-align:center;margin-bottom:20px}
+.spider{font-size:2.5rem;filter:drop-shadow(0 0 12px #e62429)}
+h1{margin:4px 0;font-size:clamp(2rem,6vw,3.2rem);font-weight:1000;letter-spacing:.03em;text-transform:uppercase;line-height:1}
+h1 span{color:#ff333b;text-shadow:3px 3px 0 #0d5aa7}
+.subtitle{color:#c5d5ed;margin-top:10px}
+.panel{background:rgba(8,17,33,.9);border:1px solid rgba(130,184,255,.35);border-radius:24px;padding:clamp(20px,5vw,36px);box-shadow:0 18px 60px #0008;backdrop-filter:blur(12px)}
+.topline{display:flex;justify-content:space-between;align-items:center;gap:12px;color:#c6d8f3;font-size:.92rem;font-weight:700}
+.pill{border:1px solid #42618b;border-radius:999px;padding:7px 12px}
+.progress{height:8px;background:#24334b;border-radius:99px;overflow:hidden;margin:16px 0 26px}
+.progress-fill{height:100%;width:0;background:linear-gradient(90deg,var(--red),#ff7b41);transition:width .25s}
+.qnum{color:#ff646a;font-weight:900;text-transform:uppercase;font-size:.8rem;letter-spacing:.12em}
+.question{font-size:clamp(1.35rem,4vw,1.85rem);line-height:1.3;margin:10px 0 24px}
+.options{display:grid;gap:12px}
+.option{width:100%;display:flex;align-items:center;gap:13px;text-align:left;padding:15px 16px;border-radius:14px;border:1px solid #344a6b;background:#101f36;color:#f7faff;font:inherit;font-weight:650;cursor:pointer;transition:.18s}
+.option:hover:not(:disabled){border-color:#69b6ff;background:#152b4a;transform:translateY(-1px)}
+.letter{display:grid;place-items:center;flex:0 0 34px;height:34px;border-radius:10px;background:#263c5b;color:#d9e9ff;font-weight:900}
+.option.correct{border-color:#43d99b;background:#103b35}
+.option.correct .letter{background:#27a879;color:#041d16}
+.option.wrong{border-color:#ff5c66;background:#401c2a}
+.option.wrong .letter{background:#e62429;color:white}
+.option:disabled{cursor:default}
+.feedback{min-height:28px;margin:17px 0 4px;font-weight:750}
+.feedback.good{color:#64edb2}.feedback.bad{color:#ff858b}
+.actions{display:flex;justify-content:flex-end;gap:12px;margin-top:18px}
+.btn{border:0;border-radius:12px;padding:13px 21px;font:inherit;font-weight:850;cursor:pointer;transition:.18s}
+.btn-primary{background:var(--red);color:white;box-shadow:0 5px 0 #90131b}
+.btn-primary:hover{background:#ff3c42;transform:translateY(-1px)}
+.btn-secondary{background:#1c2e49;color:#dceaff;border:1px solid #425c80}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.intro{text-align:center}
+.intro p{color:#c8d8ee;line-height:1.65}
+.big-mask{font-size:4.5rem;margin:0 0 8px}
+.startbtn{margin-top:12px;width:100%;font-size:1.05rem}
+.result{text-align:center}
+.score{font-size:4rem;font-weight:1000;color:#ff555c;line-height:1.1;margin:16px 0}
+.result p{color:#c8d8ee}
+.small{font-size:.84rem;color:#8fa7c9;margin-top:22px;text-align:center}
+@media(max-width:500px){body{padding:14px}.topline{font-size:.8rem}.actions .btn{flex:1}.panel{border-radius:18px}}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <header class="brand">
+    <div class="spider" aria-hidden="true">🕷️</div>
+    <h1>SPIDER<span>-VERSE</span></h1>
+    <div class="subtitle">Into the Spider-Verse · Comic Fest Quiz</div>
+  </header>
+  <section class="panel" id="app" aria-live="polite">
+    <div class="intro">
+      <div class="big-mask" aria-hidden="true">🕸️</div>
+      <h2>Ready to enter the Spider-Verse?</h2>
+      <p>Answer 15 multiple-choice questions about <em>Spider-Man: Into the Spider-Verse</em>. One question at a time. Choose carefully, web-head!</p>
+      <p><strong>15 questions · 4 options each · Final score</strong></p>
+      <button class="btn btn-primary startbtn" id="start">START QUIZ →</button>
+    </div>
+  </section>
+  <div class="small">With great power comes great responsibility.</div>
+</main>
+<script>
+const questions = [
+ {q:"Who is responsible for Miles Morales getting bitten by a spider?",a:["Peter B. Parker","It happens by accident","Kingpin","Aaron Davis"],c:1},
+ {q:"Why does Kingpin want to open a portal between dimensions?",a:["To take over the multiverse","To bring back his family","To find Miles","To destroy the collider"],c:1},
+ {q:"What is the real name of Kingpin?",a:["Norman Osborn","Otto Octavius","Wilson Fisk","Aaron Davis"],c:2},
+ {q:"What special power does Miles have besides climbing walls?",a:["Super strength only","Web wings","Turning invisible and an electric venom blast","Time travel"],c:2},
+ {q:"Who trains Miles to become a better Spider-Man?",a:["Gwen Stacy","Peter B. Parker","Jefferson Davis","Spider-Ham"],c:1},
+ {q:"What is the name of the alternate-universe Spider-Man who looks like a cartoon pig?",a:["Spider-Noir","Peni Parker","Spider-Ham","Spider-Punk"],c:2},
+ {q:"Why can't the other Spider-People stay in Miles' dimension for too long?",a:["Their powers disappear","Their bodies begin to deteriorate","They lose their memories","The portal pulls them away"],c:1},
+ {q:"Who is Prowler in the movie?",a:["Miles' father","Peter B. Parker","Aaron Davis, Miles' uncle","Wilson Fisk"],c:2},
+ {q:"What is the name of the scientist who works for Kingpin?",a:["Olivia Octavius","May Parker","Gwen Stacy","Mary Jane Watson"],c:0},
+ {q:"What does Miles' father do for a living?",a:["He is a teacher","He is a police officer","He is a scientist","He is a firefighter"],c:1},
+ {q:"What does Miles learn from Peter B. Parker?",a:["To trust himself and take responsibility","To avoid helping others","To work for Kingpin","To leave New York"],c:0},
+ {q:"What is the name of Gwen Stacy's superhero identity?",a:["Silk","Spider-Woman, also known as Spider-Gwen","Black Cat","Madame Web"],c:1},
+ {q:"Why does Miles' uncle hide his identity as Prowler?",a:["He is secretly working for Kingpin","He is protecting Peter","He wants to join the police","He is hiding from Gwen"],c:0},
+ {q:"What does Miles do to prove he is ready to become Spider-Man?",a:["He defeats Kingpin alone","He builds a new suit","He takes a leap of faith","He reveals his identity on TV"],c:2},
+ {q:"What is the main message of the movie?",a:["Only one person can be Spider-Man","Heroes must work alone","Anyone can wear the mask","Power matters more than responsibility"],c:2}
+];
+let index=0, score=0, locked=false;
+const app=document.getElementById('app');
+document.getElementById('start').addEventListener('click',()=>{index=0;score=0;renderQuestion()});
+function renderQuestion(){
+ locked=false;
+ const item=questions[index];
+ const pct=(index/questions.length)*100;
+ app.innerHTML=`
+ <div class="topline"><span class="pill">QUESTION ${index+1} / ${questions.length}</span><span class="pill">⭐ SCORE: ${score}</span></div>
+ <div class="progress" role="progressbar" aria-valuenow="${index}" aria-valuemin="0" aria-valuemax="${questions.length}"><div class="progress-fill" style="width:${pct}%"></div></div>
+ <div class="qnum">Your mission</div><h2 class="question">${item.q}</h2>
+ <div class="options">${item.a.map((answer,i)=>`<button class="option" data-i="${i}"><span class="letter">${String.fromCharCode(65+i)}</span><span>${answer}</span></button>`).join('')}</div>
+ <div class="feedback" id="feedback" role="status"></div>
+ <div class="actions"><button class="btn btn-primary" id="next" disabled>${index===questions.length-1?'SEE RESULTS':'NEXT QUESTION'} →</button></div>`;
+ app.querySelectorAll('.option').forEach(btn=>btn.addEventListener('click',()=>choose(Number(btn.dataset.i))));
+ document.getElementById('next').addEventListener('click',()=>{if(index<questions.length-1){index++;renderQuestion()}else renderResult()});
+}
+function choose(choice){
+ if(locked)return;locked=true;
+ const item=questions[index], buttons=[...app.querySelectorAll('.option')], feedback=document.getElementById('feedback');
+ buttons.forEach((b,i)=>{b.disabled=true;if(i===item.c)b.classList.add('correct');if(i===choice&&choice!==item.c)b.classList.add('wrong')});
+ if(choice===item.c){score++;feedback.textContent='✓ Correct! Great work, Spider-Man.';feedback.className='feedback good'}
+ else{feedback.textContent='✕ Not quite! The correct answer is: '+item.a[item.c]+'.';feedback.className='feedback bad'}
+ const scorePill=app.querySelector('.topline .pill:last-child');scorePill.textContent='⭐ SCORE: '+score;
+ document.getElementById('next').disabled=false;
+}
+function renderResult(){
+ const pct=Math.round(score/questions.length*100);
+ let title=pct===100?'AMAZING, SPIDER-MAN!':pct>=70?'GREAT JOB, WEB-HEAD!':pct>=40?'KEEP TRAINING!':'EVERY HERO STARTS SOMEWHERE!';
+ app.innerHTML=`<div class="result"><div class="big-mask">🏆</div><div class="qnum">Mission complete</div><h2>${title}</h2><div class="score">${score} / ${questions.length}</div><p>You answered ${score} of ${questions.length} questions correctly (${pct}%).</p><div class="progress"><div class="progress-fill" style="width:${pct}%"></div></div><button class="btn btn-primary startbtn" id="again">PLAY AGAIN ↻</button></div>`;
+ document.getElementById('again').addEventListener('click',()=>{index=0;score=0;renderQuestion()});
+}
+</script>
+</body>
+</html>
